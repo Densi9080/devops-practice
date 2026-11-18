@@ -13,13 +13,13 @@ pipeline {
             }
         }
 
-        stage('Install') {
+        stage('Build') {
             steps {
                 sh '''
-                    python3 -m venv $VENV_DIR
-                    . $VENV_DIR/bin/activate
-                    pip install --upgrade pip
-                    pip install -r req.txt
+                    cd library/backend
+                    docker build -t django-backend .
+                    cd /library/frontend
+                    docker build -t library-frontend .
                 '''
             }
         }
@@ -27,9 +27,16 @@ pipeline {
         stage('Test') {
             steps {
                 sh '''
-                    . $VENV_DIR/bin/activate
-                    python manage.py test
+                    docker run -d --name django-test django-backend tail -f /dev/null
+                    docker exec django-test pip install -r requirements.txt
+                    docker exec django-test python manage.py test
+                    docker stop django-test && docker rm django-test
                 '''
+            }
+        }
+        stage('Send'){
+            steps{
+
             }
         }
         stage('Run / Deploy') {
@@ -39,32 +46,11 @@ pipeline {
             steps {
                 keepRunning{
                     sh '''
-                        . $VENV_DIR/bin/activate
-
-                        if [ -f django.pid ]; then
-                            kill $(cat django.pid) || true
-                            rm -f django.pid
-                        fi
-
-                        # Миграции (если есть БД)
-                        python manage.py migrate --noinput || true
-
-                        # Запуск в фоне, чтобы Jenkins не висел
-                        nohup python manage.py runserver 0.0.0.0:$APP_PORT > django.log 2>&1 &
-                        echo $! > django.pid
-
-                        sleep 3
-                        curl -f http://127.0.0.1:$APP_PORT/admin/ || (echo "Django не поднялся"; cat django.log; exit 1)
-                        
-                        DJANGO_SUPERUSER_USERNAME=admin DJANGO_SUPERUSER_PASSWORD=12345678qwerty DJANGO_SUPERUSER_EMAIL=test@test.com python manage.py createsuperuser --noinput || true
-                        
-                        cd frontend
-                        npm install
-                        nohup npm run dev -- --port 5173 --host 0.0.0.0 > vue.log 2>&1 &
-                        echo $! > vue.pid
-                
-                        sleep 5
-                        curl -f http://127.0.0.1:5173/ || (echo "Vue не поднялся"; cat vue.log; exit 1)
+                        docker stop django-app || true
+                        docker rm django-app || true
+                        docker run -d --name django-app -p 8000:8000 django-backend
+                        docker run -d --name library-frontend -p 5173:5173 library-frontend
+                        docker run -d --name db -p 5432:5432 postgres:latest
                     '''
                 }
             }
