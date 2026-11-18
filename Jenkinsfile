@@ -16,9 +16,9 @@ pipeline {
         stage('Build') {
             steps {
                 sh '''
-                    cd library/backend
+                    cd /backend
                     docker build -t django-backend .
-                    cd /library/frontend
+                    cd /frontend
                     docker build -t library-frontend .
                 '''
             }
