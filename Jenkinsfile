@@ -35,7 +35,7 @@ pipeline {
             }
         }
         stage('Send'){
-            steps{
+            steps {
 
             }
         }
