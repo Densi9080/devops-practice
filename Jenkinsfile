@@ -36,6 +36,9 @@ pipeline {
         }
         stage('Send'){
             steps {
+                sh '''
+                    echo Маша попа
+                '''
 
             }
         }
