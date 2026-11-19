@@ -1,4 +1,4 @@
-from python:3.12
+from python:3.12-slim
 copy . /django-app
 workdir /django-app
 run pip install -r requirements.txt
