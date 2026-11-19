@@ -28,7 +28,7 @@ pipeline {
         stage('Test') {
             steps {
                 sh '''
-                    if !docker ps -a | grep "django-test"; then
+                    if ! docker ps -a | grep "django-test"; then
                         docker run -d --name django-test django-backend tail -f /dev/null
                     else
                         docker stop django-test || true
