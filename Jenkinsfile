@@ -18,7 +18,8 @@ pipeline {
                 sh '''
                     cd library/backend
                     docker build -t django-backend .
-                    cd library/frontend
+                    cd ..
+                    cd frontend
                     docker build -t library-frontend .
                 '''
             }
