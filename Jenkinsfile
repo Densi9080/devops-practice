@@ -28,7 +28,13 @@ pipeline {
         stage('Test') {
             steps {
                 sh '''
-                    docker run -d --name django-test django-backend tail -f /dev/null
+                    if !docker ps -a | grep "django-test"; then
+                        docker run -d --name django-test django-backend tail -f /dev/null
+                    else
+                        docker stop django-test || true
+                        docker rm django-test || true
+                        docker run -d --name django-test django-backend tail -f /dev/null
+                    fi
                     # docker exec django-test python manage.py test
                     docker stop django-test && docker rm django-test
                     echo Тест
