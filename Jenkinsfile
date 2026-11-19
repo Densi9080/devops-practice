@@ -68,13 +68,15 @@ pipeline {
                             docker exec db pg_isready -U postgres > /dev/null 2>&1 && break
                             sleep 1
                         done
-                        
+
                         if ! docker ps -a | grep "django-app"; then
                             docker run -d --name django-app --network library-net -p 8000:8000 django-backend
+                            docker exec django-app python manage.py migrate
                         else
                             docker stop django-app || true
                             docker rm django-app || true
                             docker run -d --name django-app --network library-net -p 8000:8000 django-backend
+                            docker exec django-app python manage.py migrate
                         fi
                         if ! docker ps -a | grep "library-frontend"; then
                             docker run -d --name library-frontend --network library-net -p 5173:5173 library-frontend
