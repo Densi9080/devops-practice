@@ -15,13 +15,20 @@ pipeline {
 
         stage('Build') {
             steps {
+            withCredentials([string(credentialsId: 'github-token', variable: 'GH_TOKEN')]) {
                 sh '''
+                    # Токен подставляется оболочкой из переменной окружения
+                    echo "$GH_TOKEN" | docker login ghcr.io -u Densi9080 --password-stdin
+
                     cd library/backend
-                    docker build -t django-backend .
-                    cd ..
-                    cd frontend
-                    docker build -t library-frontend .
+                    docker build -t ghcr.io/Densi9080/django-backend:latest .
+                    docker push ghcr.io/Densi9080/django-backend:latest
+
+                    cd ../frontend
+                    docker build -t ghcr.io/Densi9080/library-frontend:latest .
+                    docker push ghcr.io/Densi9080/library-frontend:latest
                 '''
+            }
             }
         }
 
@@ -41,21 +48,18 @@ pipeline {
                 '''
             }
         }
-        stage('Send'){
-            steps {
-                sh '''
-                    echo Маша попа
-                '''
-
-            }
-        }
         stage('Run / Deploy') {
             when {
                 expression { env.GIT_BRANCH == 'origin/main' }
                 }
             steps {
+                withCredentials([string(credentialsId: 'github-token', variable: 'GH_TOKEN')]){
                 keepRunning{
                     sh '''
+                        echo "$GH_TOKEN" | docker login ghcr.io -u Densi9080 --password-stdin
+                        docker pull ghcr.io/Densi9080/django-backend:latest
+                        docker pull ghcr.io/Densi9080/library-frontend:latest
+
                         docker network create library-net || true
                         if ! docker ps -a | grep "db"; then
                            docker run -d --name db --network library-net -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=library postgres:latest
@@ -70,25 +74,26 @@ pipeline {
                         done
 
                         if ! docker ps -a | grep "django-app"; then
-                            docker run -d --name django-app --network library-net -p 8000:8000 django-backend
+                            docker run -d --name django-app --network library-net -p 8000:8000 ghcr.io/Densi9080/django-backend
                             docker exec django-app python manage.py migrate
                             docker exec -e DJANGO_SUPERUSER_USERNAME=admin -e DJANGO_SUPERUSER_EMAIL=admin@example.com -e DJANGO_SUPERUSER_PASSWORD=admin django-app python manage.py createsuperuser --noinput
                         else
                             docker stop django-app || true
                             docker rm django-app || true
-                            docker run -d --name django-app --network library-net -p 8000:8000 django-backend
+                            docker run -d --name django-app --network library-net -p 8000:8000 ghcr.io/Densi9080/django-backend
                             docker exec django-app python manage.py migrate
                             docker exec -e DJANGO_SUPERUSER_USERNAME=admin -e DJANGO_SUPERUSER_EMAIL=admin@example.com -e DJANGO_SUPERUSER_PASSWORD=admin django-app python manage.py createsuperuser --noinput
                         fi
                         if ! docker ps -a | grep "library-frontend"; then
-                            docker run -d --name library-frontend --network library-net -p 5173:5173 library-frontend
+                            docker run -d --name library-frontend --network library-net -p 5173:5173 ghcr.io/Densi9080/library-frontend
                         else
                             docker stop library-frontend || true
                             docker rm library-frontend || true
-                            docker run -d --name library-frontend --network library-net -p 5173:5173 library-frontend
+                            docker run -d --name library-frontend --network library-net -p 5173:5173 ghcr.io/Densi9080/library-frontend
                         fi
                     '''
                 }
+            }
             }
         }
     }
