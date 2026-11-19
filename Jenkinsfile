@@ -56,6 +56,7 @@ pipeline {
             steps {
                 keepRunning{
                     sh '''
+                        docker network create library-net || true
                         if ! docker ps -a | grep "django-app"; then
                             docker run -d --name django-app -p 8000:8000 django-backend
                         else
@@ -64,14 +65,14 @@ pipeline {
                             docker run -d --name django-app -p 8000:8000 django-backend
                         fi
                         if ! docker ps -a | grep "library-frontend"; then
-                            docker run -d --name library-frontend -p 5173:5173 library-frontend
+                            docker run -d --name library-frontend --network library-net -p 5173:5173 library-frontend
                         else
                             docker stop library-frontend || true
                             docker rm library-frontend || true
-                            docker run -d --name library-frontend -p 5173:5173 library-frontend
+                            docker run -d --name library-frontend --network library-net -p 5173:5173 library-frontend
                         fi
                         if ! docker ps -a | grep "db"; then
-                           docker run -d --name db -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=library postgres:latest
+                           docker run -d --name db --network library-net -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=library postgres:latest
                         else
                             docker stop db || true
                             docker rm db || true
