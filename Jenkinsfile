@@ -21,12 +21,12 @@ pipeline {
                     echo "$GH_TOKEN" | docker login ghcr.io -u Densi9080 --password-stdin
 
                     cd library/backend
-                    docker build -t ghcr.io/Densi9080/django-backend:latest .
-                    docker push ghcr.io/Densi9080/django-backend:latest
+                    docker build -t ghcr.io/densi9080/django-backend:latest .
+                    docker push ghcr.io/densi9080/django-backend:latest
 
                     cd ../frontend
-                    docker build -t ghcr.io/Densi9080/library-frontend:latest .
-                    docker push ghcr.io/Densi9080/library-frontend:latest
+                    docker build -t ghcr.io/densi9080/library-frontend:latest .
+                    docker push ghcr.io/densi9080/library-frontend:latest
                 '''
             }
             }
