@@ -64,6 +64,11 @@ pipeline {
                             docker rm db || true
                             docker run -d --name db --network library-net -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=library postgres:latest
                         fi
+                        for i in $(seq 1 30); do
+                            docker exec db pg_isready -U postgres > /dev/null 2>&1 && break
+                            sleep 1
+                        done
+                        
                         if ! docker ps -a | grep "django-app"; then
                             docker run -d --name django-app --network library-net -p 8000:8000 django-backend
                         else
