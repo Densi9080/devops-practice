@@ -87,13 +87,11 @@ pipeline {
                         if ! docker ps -a | grep "django-app"; then
                             docker run -d --name django-app --network library-net -p 8000:8000 ghcr.io/densi9080/django-backend
                             docker exec django-app python manage.py migrate
-                            docker exec -e DJANGO_SUPERUSER_USERNAME=admin -e DJANGO_SUPERUSER_EMAIL=admin@example.com -e DJANGO_SUPERUSER_PASSWORD=admin django-app python manage.py createsuperuser --noinput
                         else
                             docker stop django-app || true
                             docker rm django-app || true
                             docker run -d --name django-app --network library-net -p 8000:8000 ghcr.io/densi9080/django-backend
                             docker exec django-app python manage.py migrate
-                            docker exec -e DJANGO_SUPERUSER_USERNAME=admin -e DJANGO_SUPERUSER_EMAIL=admin@example.com -e DJANGO_SUPERUSER_PASSWORD=admin django-app python manage.py createsuperuser --noinput
                         fi
                         if ! docker ps -a | grep "library-frontend"; then
                             docker run -d --name library-frontend --network library-net -p 5173:5173 ghcr.io/densi9080/library-frontend
