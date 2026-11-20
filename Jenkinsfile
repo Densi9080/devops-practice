@@ -35,7 +35,7 @@ pipeline {
                 sh '''
                     docker network create test-net || true
                     if ! docker ps -a | grep "db_test"; then
-                        docker run -d --name db_test --network test-net -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=library postgres:latest
+                        docker run -d --name db_test --network test-net -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=library postgres:latest
                     else
                         docker stop db || true
                         docker rm db || true
