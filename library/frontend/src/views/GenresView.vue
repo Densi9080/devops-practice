@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getGenres, createGenre as apiCreateGenre, getGenres} from '../api'
+import { getGenres, createGenre as apiCreateGenre} from '../api'
 
 const authors = ref([])
 const loading = ref(false)
