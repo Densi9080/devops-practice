@@ -17,9 +17,7 @@ pipeline {
             steps {
             withCredentials([string(credentialsId: 'github-token', variable: 'GH_TOKEN')]) {
                 sh '''
-                    # Токен подставляется оболочкой из переменной окружения
                     echo "$GH_TOKEN" | docker login ghcr.io -u Densi9080 --password-stdin
-
                     cd library/backend
                     docker build -t ghcr.io/densi9080/django-backend:latest .
                     docker push ghcr.io/densi9080/django-backend:latest
