@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from .library_app.models import Author, Genre, Book, Review, Order
+from .models import Author, Genre, Book, Review, Order
 
 
 class AuthorAPITest(APITestCase):

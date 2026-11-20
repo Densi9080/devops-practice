@@ -33,15 +33,29 @@ pipeline {
         stage('Test') {
             steps {
                 sh '''
+                    docker network create test-net || true
+                    if ! docker ps -a | grep "db_test"; then
+                        docker run -d --name db_test --network test-net -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=library postgres:latest
+                    else
+                        docker stop db || true
+                        docker rm db || true
+                        docker run -d --name db --network test-net -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=library postgres:latest
+                    fi
+                    for i in $(seq 1 30); do
+                        docker exec db_test pg_isready -U postgres > /dev/null 2>&1 && break
+                        sleep 1
+                    done
                     if ! docker ps -a | grep "django-test"; then
-                        docker run -d --name django-test django-backend tail -f /dev/null
+                        docker run -d --name django-test --network test-net django-backend tail -f /dev/null
                     else
                         docker stop django-test || true
                         docker rm django-test || true
-                        docker run -d --name django-test django-backend tail -f /dev/null
+                        docker run -d --name django-test --network test-net django-backend tail -f /dev/null
                     fi
-                    docker exec django-test python manage.py test --noinput -v 2
+
+                    docker exec django-test python manage.py test library_app --noinput -v 2
                     docker stop django-test && docker rm django-test
+                    docker stop db_test && docker rm db_test
                     echo Тест
                 '''
             }
