@@ -52,6 +52,8 @@ pipeline {
                         docker rm django-test || true
                         docker run -d --name django-test --network test-net -e POSTGRES_HOST=db_test django-backend tail -f /dev/null
                     fi
+                    docker exec django-test ls -la library_app/tests.py
+                    docker exec django-test cat library_app/tests.py | head -n 5
                     docker exec django-test python manage.py test library_app --noinput -v 2
                     docker stop django-test && docker rm django-test
                     docker stop db_test && docker rm db_test
