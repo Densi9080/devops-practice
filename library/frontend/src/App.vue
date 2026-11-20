@@ -5,6 +5,7 @@
       <router-link to="/">Каталог</router-link>
       <router-link to="/orders">Заказы</router-link>
       <router-link to="/authors">Авторы</router-link>
+      <router-link to="/genres">Жанры</router-link>
     </nav>
     <router-view />
   </div>
