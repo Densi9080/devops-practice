@@ -40,7 +40,7 @@ pipeline {
                         docker rm django-test || true
                         docker run -d --name django-test django-backend tail -f /dev/null
                     fi
-                    # docker exec django-test python manage.py test
+                    docker exec django-test python manage.py test
                     docker stop django-test && docker rm django-test
                     echo Тест
                 '''

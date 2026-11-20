@@ -43,17 +43,12 @@ export async function createOrder(userId, bookId) {
   })
   return data
 }
-export async function createAuthor(name, bio, birth_year) {
-  const { data }=await api.post('authors/', {
-    name: name,
-    bio: bio,
-    birth_year: birth_year,
-  })
-  return data
+export async function createAuthor(data) {
+  const { data: created } = await api.post('authors/', data)
+  return created
 }
-export async function createGenre(name) {
-  const { data }=await api.post('genres/', {
-    name: name,
-  })
-  return data
+
+export async function createGenre(data) {
+  const { data: created } = await api.post('genres/', data)
+  return created
 }

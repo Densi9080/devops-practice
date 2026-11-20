@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { getGenres, createGenre as apiCreateGenre} from '../api'
 
-const authors = ref([])
+const genres = ref([])
 const loading = ref(false)
 const error = ref('')
 const form = ref({ name: ''})
