@@ -53,7 +53,7 @@ onMounted(load)
 
     <div v-else class="grid">
       <article v-for="g in genres" :key="g.id" class="card">
-        <p class="card-author">{{ g.name || 'Без названия' }}</p>
+        <p class="card-author">{{ g.name || 'Без имени' }}</p>
       </article>
     </div>
   </div>
