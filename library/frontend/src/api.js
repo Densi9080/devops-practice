@@ -51,3 +51,9 @@ export async function createAuthor(name, bio, birth_year) {
   })
   return data
 }
+export async function createGenre(name) {
+  const { data }=await api.post('genres/', {
+    name: name,
+  })
+  return data
+}

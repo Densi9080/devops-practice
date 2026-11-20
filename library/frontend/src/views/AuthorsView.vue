@@ -5,12 +5,12 @@ import { getAuthors, createAuthor as apiCreateAuthor} from '../api'
 const authors = ref([])
 const loading = ref(false)
 const error = ref('')
-const form = ref({ title: '', price: 0, year: null, author_id: '' })
+const form = ref({ name: '', bio: 0, birth_year: null})
 const orderError = ref('')
 const orderSuccess = ref(false)
 
 function resetForm() {
-  form.value = { title: '', price: 0, year: null, author_id: '' }
+  form.value = { name: '', bio: 0, birth_year: null}
 }
 async function load() {
   loading.value = true
