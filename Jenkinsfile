@@ -39,7 +39,7 @@ pipeline {
                     else
                         docker stop db || true
                         docker rm db || true
-                        docker run -d --name db --network test-net -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=library postgres:latest
+                        docker run -d --name db_test --network test-net -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=library postgres:latest
                     fi
                     for i in $(seq 1 30); do
                         docker exec db_test pg_isready -U postgres > /dev/null 2>&1 && break
