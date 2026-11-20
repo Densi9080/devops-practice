@@ -37,8 +37,8 @@ pipeline {
                     if ! docker ps -a | grep "db_test"; then
                         docker run -d --name db_test --network test-net -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=library postgres:latest
                     else
-                        docker stop db || true
-                        docker rm db || true
+                        docker stop db_test || true
+                        docker rm db_test || true
                         docker run -d --name db_test --network test-net -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=library postgres:latest
                     fi
                     for i in $(seq 1 30); do
