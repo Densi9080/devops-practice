@@ -45,7 +45,7 @@ onMounted(load)
     <form class="book-form" @submit.prevent="create()">
       <h3>Добавить автора</h3>
       <input v-model="form.name" placeholder="ФИО" required />
-      <input v-model.number="form.bio" type="number" step="0.01" placeholder="Биография" />
+      <input v-model="form.bio" placeholder="Биография" />
       <input v-model.number="form.birth_year" type="number" placeholder="Год рождения" />
       <button type="submit">Сохранить</button>
     </form>
